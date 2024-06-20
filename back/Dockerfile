@@ -20,6 +20,5 @@ EXPOSE 5000
 ENV FLASK_ENV=production
 
 # Commande pour lancer l'application Flask
-CMD ["python", "app.py"]
-
+CMD ["python", $(pwd)+"/app.py"]
 

@@ -7,12 +7,16 @@
 # ●Copiez nginx.conf dans /etc/nginx/conf.d/default.conf du conteneur.
 # ●Exposez le port 80.
 
-# Compilation de l'application Vue.js (dossier actuel)
-FROM node:14 as build-stage
+# Compilation de l'application Vue.js (dossier actuel) avec yarn dans le répertoire /app/dist
+FROM node:16.3.0-alpine as build-stage
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
 COPY . .
-RUN npm run build
+RUN yarn install
+RUN yarn build
 
-# Création de l'image NGINX
+# Création de l'image Docker basée sur NGINX
+FROM nginx:1.21.0-alpine
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
